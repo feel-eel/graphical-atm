@@ -1,10 +1,15 @@
 package view;
 
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import controller.ViewManager;
@@ -13,6 +18,7 @@ import controller.ViewManager;
 public class HomeView extends JPanel implements ActionListener {
 	
 	private ViewManager manager;		// manages interactions between the views, model, and database
+	private JButton logout;			// button that powers off the ATM
 	
 	/**
 	 * Constructs an instance (or objects) of the HomeView class.
@@ -22,9 +28,19 @@ public class HomeView extends JPanel implements ActionListener {
 	
 	public HomeView(ViewManager manager) {
 		super();
+		this.setLayout(null);
 		
 		this.manager = manager;
 		initialize();
+		initLogoutButton();
+	}
+	
+	private void initLogoutButton() {	
+		logout = new JButton("Logout");
+		logout.setBounds(205, 180, 200, 35);
+		logout.addActionListener(this);
+		
+		this.add(logout);
 	}
 	
 	///////////////////// PRIVATE METHODS /////////////////////////////////////////////
@@ -72,7 +88,11 @@ public class HomeView extends JPanel implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		Object source = e.getSource();
 		
+		if (source.equals(logout)) {
+			manager.logout();
+		}
 		// TODO
 		//
 		// this is where you'll setup your action listener, which is responsible for
@@ -82,3 +102,4 @@ public class HomeView extends JPanel implements ActionListener {
 		// feel free to use my action listener in LoginView.java as an example.
 	}
 }
+

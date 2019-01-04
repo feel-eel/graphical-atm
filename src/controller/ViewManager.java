@@ -56,6 +56,7 @@ public class ViewManager {
 		}
 	}
 	
+	
 	/**
 	 * Switches the active (or visible) view upon request.
 	 * 
@@ -65,6 +66,8 @@ public class ViewManager {
 	public void switchTo(String view) {
 		((CardLayout) views.getLayout()).show(views, view);
 	}
+	
+	
 	
 	/**
 	 * Routes a shutdown request to the database before exiting the application. This
@@ -91,6 +94,11 @@ public class ViewManager {
 	}
 	
 	public void logout() {
+		switchTo(ATM.LOGIN_VIEW);
+		account = null;
+	}
+
+	public void submitAccount() {
 		switchTo(ATM.LOGIN_VIEW);
 		account = null;
 	}

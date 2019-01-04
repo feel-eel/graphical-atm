@@ -1,7 +1,7 @@
 package view;
 
 import java.util.ArrayList;
-
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.List;
 import java.awt.event.ActionEvent;
@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,7 +17,10 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import model.BankAccount;
+import model.User;
 import controller.ViewManager;
+import data.Database;
 
 @SuppressWarnings("serial")
 public class CreateView extends JPanel implements ActionListener {
@@ -30,6 +34,14 @@ public class CreateView extends JPanel implements ActionListener {
 	private JTextField cityField;	
 	private JTextField stateField;
 	private JTextField zipField;	
+	private JTextField pinField;	
+	private JButton cancel;
+	private JButton submit;
+	private JLabel errorMessageLabel;
+	private JComboBox year;
+	private JComboBox mon;
+	private JComboBox days;
+	
 	/**
 	 * Constructs an instance (or object) of the CreateView class.
 	 * 
@@ -40,6 +52,7 @@ public class CreateView extends JPanel implements ActionListener {
 		super();
 		
 		this.manager = manager;
+		this.errorMessageLabel = new JLabel("", SwingConstants.CENTER);
 		initialize();
 	}
 	
@@ -59,6 +72,10 @@ public class CreateView extends JPanel implements ActionListener {
 		initCity();
 		initState();
 		initZip();
+		initCancelButton();
+		initSubmit();
+		initErrorMessageLabel();
+		initPin();
 		
 		// TODO
 		//
@@ -109,28 +126,28 @@ public class CreateView extends JPanel implements ActionListener {
 		label.setFont(new Font("DialogInput", Font.BOLD, 14));
 		
 		
-		String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-		final JComboBox<String> mon = new JComboBox<String>(months);
+		String[] months = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
+		mon = new JComboBox<String>(months);
 		mon.setBounds(100, 70, 95, 30);
 		
 		String[] day = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"};
-		final JComboBox<String> days = new JComboBox<String>(day);
+		days = new JComboBox<String>(day);
 		days.setBounds(200, 70, 95, 30);
 		
-		//int[] year = {};
-		//int x = 0;
-		//for (int i = 1900; i < 2019; i++) {
-		//	year[x] = i;
-		//	x++;
-		//}
-		//System.out.println(year);
+		String[] years = new String[119];
+		int x = 0;
+		for (int i = 1900; i < 2019; i++) {
+			years[x] = "" + i;
+			x++;
+		}
 		
-		//final JComboBox<integer> year = new JComboBox<integer>(year);
-		//years.setBounds(200, 70, 95, 30);
+		year = new JComboBox<String>(years);
+		year.setBounds(300, 70, 95, 30);
 
 	    this.add(label);
 	    this.add(mon);
 	    this.add(days);
+	    this.add(year);
 	}
 	
 	private void initPhone() {
@@ -198,6 +215,19 @@ public class CreateView extends JPanel implements ActionListener {
 		this.add(zipField);
 	}
 	
+	private void initPin() {
+		JLabel label = new JLabel("Pin", SwingConstants.RIGHT);
+		label.setBounds(0, 290, 95, 30);
+		label.setLabelFor(pinField);
+		label.setFont(new Font("DialogInput", Font.BOLD, 14));
+		
+		pinField = new JPasswordField(20);
+		pinField.setBounds(100, 290, 200, 30);
+		
+		this.add(label);
+		this.add(pinField);
+	}
+	
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		throw new IOException("ERROR: The CreateView class is not serializable.");
 	}
@@ -210,8 +240,80 @@ public class CreateView extends JPanel implements ActionListener {
 	 * @param e
 	 */
 	
+	private void initCancelButton() {	
+		cancel = new JButton("Cancel");
+		cancel.setBounds(215, 325, 200, 35);
+		cancel.addActionListener(this);
+		
+		this.add(cancel);
+	}
+	
+	private void initSubmit() {	
+		submit = new JButton("Submit");
+		submit.setBounds(10, 325, 200, 35);
+		submit.addActionListener(this);
+		
+		this.add(submit);
+	}
+	
+	///////////////////// INSTANCE METHODS ////////////////////////////////////////////
+	
+	/**
+	 * Updates the error message label.
+	 * 
+	 * @param errorMessage
+	 */
+	
+	public void updateErrorMessage(String errorMessage) {
+		errorMessageLabel.setText(errorMessage);
+	}
+	
+	private void initErrorMessageLabel() {
+		errorMessageLabel.setBounds(50, 370, 500, 35);
+		errorMessageLabel.setFont(new Font("DialogInput", Font.ITALIC, 14));
+		errorMessageLabel.setForeground(Color.RED);
+		
+		this.add(errorMessageLabel);
+	}
+		
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		Object source = e.getSource();
+		
+		if (source.equals(cancel)) {
+			manager.logout();
+			this.removeAll();
+			this.initialize();
+		} else if (source.equals(submit)) {
+			Database database = new Database();
+			String firstName = fnameField.getText();
+			String lastName = lnameField.getText();
+			String phone = phoneField.getText();
+			String street = streetField.getText();
+			String city = cityField.getText();
+			String state = stateField.getText();
+			String zip = zipField.getText();
+			String pin = pinField.getText();
+			String newyear = year.getSelectedItem().toString();
+			String newday = days.getSelectedItem().toString();
+			String newmonth = mon.getSelectedItem().toString();
+			String dob = newyear + newmonth + newday;
+	
+			
+			if (firstName.equals("") || lastName.equals("") || phone.equals("") || street.equals("") || city.equals("") || state.equals("") || zip.equals("") || pin.equals("")) {
+				updateErrorMessage("Please enter all information");
+			} else {
+				User user = new User(Integer.parseInt(pin), Integer.parseInt(dob), Long.parseLong(phone), firstName, lastName, street, city, state, zip);
+				long accountnum = 1200000000;
+				BankAccount account = new BankAccount('Y', accountnum, 0, user);
+				database.insertAccount(account);
+				manager.logout();
+				this.removeAll();
+				this.initialize();
+			}
+			
+		}
+		
 		
 		// TODO
 		//

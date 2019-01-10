@@ -286,6 +286,13 @@ public class Database {
 	 * @throws SQLException
 	 */
 	
+	public long getMaxAccountNumber() throws SQLException {
+		stmt = conn.createStatement();
+		rs = stmt.executeQuery("SELECT MAX(account_number) FROM accounts");
+		rs.next();
+	    return rs.getLong(1);
+	}
+	
 	private void insertDefaultAccount() throws SQLException {
 		stmt = conn.createStatement();
 		rs = stmt.executeQuery("SELECT COUNT(*) FROM accounts");

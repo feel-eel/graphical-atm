@@ -2,6 +2,7 @@ package controller;
 
 import java.awt.CardLayout;
 import java.awt.Container;
+import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
 
@@ -46,6 +47,8 @@ public class ViewManager {
 				LoginView lv = ((LoginView) views.getComponents()[ATM.LOGIN_VIEW_INDEX]);
 				lv.updateErrorMessage("Invalid account number and/or PIN.");
 			} else {
+				sendBankAccount(account, "Home");
+				sendBankAccount(account, "Withdraw");
 				switchTo(ATM.HOME_VIEW);
 				
 				LoginView lv = ((LoginView) views.getComponents()[ATM.LOGIN_VIEW_INDEX]);
@@ -56,6 +59,23 @@ public class ViewManager {
 		}
 	}
 	
+	public void sendBankAccount(BankAccount account, String view) {
+		switch (view){
+		case "Home":
+			view.HomeView hv = ((view.HomeView) views.getComponents()[ATM.HOME_VIEW_INDEX]);
+			hv.setBankAccount(account);
+			break;
+		case "Withdraw":
+			view.WithdrawView wv = ((view.WithdrawView) views.getComponents()[ATM.WITHDRAW_VIEW_INDEX]);
+			wv.setBankAccount(account);
+			break;
+		case "Deposit":
+			view.DepositView dv = ((view.DepositView) views.getComponents()[ATM.DEPOSIT_VIEW_INDEX]);
+			dv.setBankAccount(account);
+			break;
+		}
+			
+	}
 	
 	/**
 	 * Switches the active (or visible) view upon request.
@@ -102,4 +122,11 @@ public class ViewManager {
 		switchTo(ATM.LOGIN_VIEW);
 		account = null;
 	}
+	public boolean updateAccount(BankAccount account) {
+		return db.updateAccount(account);
+	}
+	public long getMaxAccountNumber() throws SQLException {
+		return db.getMaxAccountNumber();
+	}
+	
 }

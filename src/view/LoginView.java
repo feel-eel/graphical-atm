@@ -31,6 +31,7 @@ public class LoginView extends JPanel implements ActionListener {
 	private JPasswordField pinField;		// textfield where the user enters his or her PIN
 	private JLabel errorMessageLabel;		// label for potential error messages
 	
+	
 	/**
 	 * Constructs an instance (or objects) of the LoginView class.
 	 * 
@@ -72,6 +73,7 @@ public class LoginView extends JPanel implements ActionListener {
 		initCreateButton();
 		initErrorMessageLabel();
 		initPowerButton();
+		
 	}
 	
 	/*

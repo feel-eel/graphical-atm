@@ -1,5 +1,6 @@
 package view;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.Font;
@@ -286,6 +287,7 @@ public class CreateView extends JPanel implements ActionListener {
 			this.initialize();
 		} else if (source.equals(submit)) {
 			Database database = new Database();
+			
 			String firstName = fnameField.getText();
 			String lastName = lnameField.getText();
 			String phone = phoneField.getText();
@@ -304,7 +306,14 @@ public class CreateView extends JPanel implements ActionListener {
 				updateErrorMessage("Please enter all information");
 			} else {
 				User user = new User(Integer.parseInt(pin), Integer.parseInt(dob), Long.parseLong(phone), firstName, lastName, street, city, state, zip);
-				long accountnum = 1200000000;
+				long accountnum;
+				try {
+					accountnum = manager.getMaxAccountNumber() + 1;
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					accountnum = 1;
+				}
 				BankAccount account = new BankAccount('Y', accountnum, 0, user);
 				database.insertAccount(account);
 				manager.logout();

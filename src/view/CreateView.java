@@ -283,6 +283,7 @@ public class CreateView extends JPanel implements ActionListener {
 		
 		if (source.equals(cancel)) {
 			manager.logout();
+			updateErrorMessage(" ");
 			this.removeAll();
 			this.initialize();
 		} else if (source.equals(submit)) {
@@ -316,7 +317,9 @@ public class CreateView extends JPanel implements ActionListener {
 				}
 				BankAccount account = new BankAccount('Y', accountnum, 0, user);
 				database.insertAccount(account);
-				manager.logout();
+				updateErrorMessage(" ");
+				manager.sendBankAccount(account, "Home");
+				manager.switchTo(ATM.HOME_VIEW);
 				this.removeAll();
 				this.initialize();
 			}
@@ -325,7 +328,7 @@ public class CreateView extends JPanel implements ActionListener {
 		
 		
 		// TODO
-		//
+		// 
 		// this is where you'll setup your action listener, which is responsible for
 		// responding to actions the user might take in this view (an action can be a
 		// user clicking a button, typing in a textfield, etc.).

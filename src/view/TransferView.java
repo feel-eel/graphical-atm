@@ -37,6 +37,7 @@ public class TransferView extends JPanel implements ActionListener {
 		super();
 		
 		this.manager = manager;
+		this.errorMessageLabel = new JLabel("", SwingConstants.CENTER);
 		initialize();
 	}
 	
@@ -47,6 +48,7 @@ public class TransferView extends JPanel implements ActionListener {
 		initMoney();
 		initCancelButton();
 		initDestination();
+		initErrorMessageLabel();
 	}
 	
 	private void initTransferButton() {	
@@ -59,25 +61,25 @@ public class TransferView extends JPanel implements ActionListener {
 	
 	private void initMoney() {
 		JLabel label = new JLabel("Amount to transfer", SwingConstants.RIGHT);
-		label.setBounds(0, 105, 200, 200);
+		label.setBounds(0, 100, 200, 200);
 		label.setLabelFor(moneyField);
 		label.setFont(new Font("DialogInput", Font.BOLD, 14));
 		
 		moneyField = new JTextField(20);
-		moneyField.setBounds(205, 200, 200, 30);
+		moneyField.setBounds(205, 185, 200, 30);
 		
 		this.add(label);
 		this.add(moneyField);
 	}
 	
 	private void initDestination() {
-		JLabel label = new JLabel("Where to transfer", SwingConstants.RIGHT);
-		label.setBounds(0, 130, 200, 200);
+		JLabel label = new JLabel("Destination", SwingConstants.RIGHT);
+		label.setBounds(0, 135, 200, 200);
 		label.setLabelFor(moneyField);
 		label.setFont(new Font("DialogInput", Font.BOLD, 14));
 		
 		destinationField = new JTextField(20);
-		destinationField.setBounds(0, 128, 200, 30);
+		destinationField.setBounds(205, 225, 200, 30);
 		
 		this.add(label);
 		this.add(destinationField);
@@ -114,23 +116,37 @@ public class TransferView extends JPanel implements ActionListener {
 		
 		if (source.equals(cancel)) {
 			manager.switchTo("HOME_VIEW");
+			updateErrorMessage(" ");
 			this.removeAll();
 			this.initialize();
 		} else if (source.equals(transferButton)) {
 			Database database = new Database();
 			String money = moneyField.getText();
-	
+			String destin = destinationField.getText();
 			
-			if (money.equals("")) {
+			
+			if (money.equals("") || destin.equals("")) {
 				updateErrorMessage("Please enter all information");
 			} else {
-				//User user = new User(Integer.parseInt(pin), Integer.parseInt(dob), Long.parseLong(phone), firstName, lastName, street, city, state, zip);
-				//long accountnum = 1200000000;
-				//BankAccount account = new BankAccount('Y', accountnum, 0, user);
-				//database.updateAccount(account);
-				//manager.logout();
-				//this.removeAll();
-				//this.initialize();
+				double moneyS = Double.parseDouble(moneyField.getText());
+				long destination = Long.parseLong(destinationField.getText());
+				BankAccount destinationA = manager.getAccountWNum(destination);
+				
+				int result = account.transfer(destinationA, moneyS);
+				if (result == 3) {
+					boolean results1 = manager.updateAccount(account);
+					boolean results2 = manager.updateAccount(destinationA);
+					
+					if (results1 == true && results2 == true) {
+						manager.sendBankAccount(account, "Home");
+						manager.switchTo("HOME_VIEW");
+						this.removeAll();
+						this.initialize();
+					}
+				} else {
+					updateErrorMessage("Please enter a valid amount/account number");
+				}	//1200000002
+					//1200000003
 			}
 		}
 	}

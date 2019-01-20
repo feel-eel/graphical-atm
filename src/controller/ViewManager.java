@@ -46,7 +46,7 @@ public class ViewManager {
 			if (account == null) {
 				LoginView lv = ((LoginView) views.getComponents()[ATM.LOGIN_VIEW_INDEX]);
 				lv.updateErrorMessage("Invalid account number and/or PIN.");
-			} else {
+			} else if (account.getStatus() == 'Y'){
 				sendBankAccount(account, "Home");
 				sendBankAccount(account, "Withdraw");
 				switchTo(ATM.HOME_VIEW);
@@ -72,6 +72,14 @@ public class ViewManager {
 		case "Deposit":
 			view.DepositView dv = ((view.DepositView) views.getComponents()[ATM.DEPOSIT_VIEW_INDEX]);
 			dv.setBankAccount(account);
+			break;
+		case "Transfer":
+			view.TransferView tv = ((view.TransferView) views.getComponents()[ATM.TRANSFER_VIEW_INDEX]);
+			tv.setBankAccount(account);
+			break;
+		case "Info":
+			view.InformationView iv = ((view.InformationView) views.getComponents()[ATM.INFORMATION_VIEW_INDEX]);
+			iv.setBankAccount(account);
 			break;
 		}
 			
@@ -113,6 +121,7 @@ public class ViewManager {
 		}
 	}
 	
+	
 	public void logout() {
 		switchTo(ATM.LOGIN_VIEW);
 		account = null;
@@ -128,5 +137,12 @@ public class ViewManager {
 	public long getMaxAccountNumber() throws SQLException {
 		return db.getMaxAccountNumber();
 	}
+	public BankAccount getAccountWNum(long accountNum) {
+		return db.getAccount(accountNum);
+	}
+	public boolean closeAccount(BankAccount account) {
+		return db.closeAccount(account);
+	}
+	
 	
 }

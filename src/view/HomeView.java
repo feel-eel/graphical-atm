@@ -32,6 +32,8 @@ public class HomeView extends JPanel implements ActionListener {
 	private JLabel welcomeField;
 	private JButton withdrawButton;
 	private JButton transferButton;
+	private JButton infoButton;
+	private JButton closeButton;
 	
 	/**
 	 * Constructs an instance (or objects) of the HomeView class.
@@ -72,6 +74,8 @@ public class HomeView extends JPanel implements ActionListener {
 		initDepositButton();
 		initWithdrawButton();
 		initTransferButton();
+		initInformationButton();
+		initCloseButton();
 		// TODO
 		//
 		// this is where you should build the HomeView (i.e., all the components that
@@ -111,7 +115,7 @@ public class HomeView extends JPanel implements ActionListener {
 	private void initAccountNumber() {
 	
 		numberField = new JLabel("numberField", SwingConstants.RIGHT);
-		numberField.setBounds(100, 140, 95, 35);
+		numberField.setBounds(50, 140, 150, 35);
 		numberField.setFont(new Font("DialogInput", Font.BOLD, 14));
 	
 		this.add(numberField);
@@ -139,10 +143,25 @@ public class HomeView extends JPanel implements ActionListener {
 		
 		this.add(transferButton);
 	}
+	private void initInformationButton() {	
+		infoButton = new JButton("Edit Information");
+		infoButton.setBounds(250, 250, 200, 35);
+		infoButton.addActionListener(this);
+		
+		this.add(infoButton);
+	}
+	
+	private void initCloseButton() {	
+		closeButton = new JButton("Close Account");
+		closeButton.setBounds(250, 300, 200, 35);
+		closeButton.addActionListener(this);
+		
+		this.add(closeButton);
+	}
 
 	private void initLogoutButton() {	
 		logout = new JButton("Logout");
-		logout.setBounds(250, 250, 200, 35);
+		logout.setBounds(250, 350, 200, 35);
 		logout.addActionListener(this);
 		
 		this.add(logout);
@@ -169,8 +188,8 @@ public class HomeView extends JPanel implements ActionListener {
 	public void setBankAccount(BankAccount account) {
 		this.account = account;
 		nameField.setText(account.getUser().getName());
-		moneyField.setText(account.getBalance() + "");
-		numberField.setText(account.getAccountNumber() + "");
+		moneyField.setText("$" + account.getBalance() + "");
+		numberField.setText("Acc: " + account.getAccountNumber() + "");
 	}
 	
 	@Override
@@ -188,7 +207,17 @@ public class HomeView extends JPanel implements ActionListener {
 			manager.switchTo(ATM.WITHDRAW_VIEW);
 		}
 		if (source.equals(transferButton)) { 
+			manager.sendBankAccount(account, "Transfer");
 			manager.switchTo(ATM.TRANSFER_VIEW);
+		}
+		if (source.equals(infoButton)) { 
+			manager.sendBankAccount(account, "Info");
+			manager.switchTo(ATM.INFORMATION_VIEW);
+		}	if (source.equals(closeButton)) { 
+			boolean results = manager.closeAccount(account);
+			if (results == true) {
+				manager.logout();
+			}
 		}
 		// TODO
 		//

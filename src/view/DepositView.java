@@ -36,6 +36,7 @@ public class DepositView extends JPanel implements ActionListener {
 		super();
 		
 		this.manager = manager;
+		this.errorMessageLabel = new JLabel("", SwingConstants.CENTER);
 		initialize();
 	}
 	
@@ -45,6 +46,7 @@ public class DepositView extends JPanel implements ActionListener {
 		initDepositButton();
 		initMoney();
 		initCancelButton();
+		initErrorMessageLabel();
 		//initErrorMessageLabel();
 	}
 	
@@ -100,6 +102,7 @@ public class DepositView extends JPanel implements ActionListener {
 		
 		if (source.equals(cancel)) {
 			manager.switchTo("HOME_VIEW");
+			updateErrorMessage(" ");
 			this.removeAll();
 			this.initialize();
 		} else if (source.equals(depositButton)) {
@@ -109,17 +112,21 @@ public class DepositView extends JPanel implements ActionListener {
 			
 			if (money.equals("")) {
 				updateErrorMessage("Please enter all information");
-			} else {
+			}
+			else {
 				double moneyS = Double.parseDouble(moneyField.getText());
 				int result = account.deposit(moneyS);
 				if (result == 3) {
 					boolean results = manager.updateAccount(account);
 					if (results == true) {
+						manager.sendBankAccount(account, "Home");
 						manager.switchTo("HOME_VIEW");
 						this.removeAll();
 						this.initialize();
 					}
-				}	
+				} else {
+					updateErrorMessage("Please enter a valid amount");
+				}
 			}
 		}
 	}

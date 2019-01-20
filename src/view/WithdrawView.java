@@ -36,6 +36,7 @@ public class WithdrawView extends JPanel implements ActionListener {
 		super();
 		
 		this.manager = manager;
+		this.errorMessageLabel = new JLabel("", SwingConstants.CENTER);
 		initialize();
 	}
 	
@@ -45,6 +46,7 @@ public class WithdrawView extends JPanel implements ActionListener {
 		initWithdrawButton();
 		initMoney();
 		initCancelButton();
+		initErrorMessageLabel();
 	}
 	
 	private void initWithdrawButton() {	
@@ -99,6 +101,7 @@ public class WithdrawView extends JPanel implements ActionListener {
 		
 		if (source.equals(cancel)) {
 			manager.switchTo("HOME_VIEW");
+			updateErrorMessage(" ");
 			this.removeAll();
 			this.initialize();
 		} else if (source.equals(withdrawButton)) {
@@ -114,10 +117,13 @@ public class WithdrawView extends JPanel implements ActionListener {
 				if (result == 3) {
 					boolean results = manager.updateAccount(account);
 					if (results == true) {
+						manager.sendBankAccount(account, "Home");
 						manager.switchTo("HOME_VIEW");
 						this.removeAll();
 						this.initialize();
 					}
+				} else {
+					updateErrorMessage("Please enter a valid amount");
 				}	
 			}
 		}
